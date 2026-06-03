@@ -4,6 +4,8 @@ module.exports = [
 
 // MERGED MODULE: [project]/src/entry.js [client] (ecmascript)
 ;
+// MERGED MODULE: [project]/src/fixtures/alpha.bin.[bytes].mjs [client] (ecmascript)
+;
 // MERGED MODULE: [turbopack]/shared/base64.ts [client] (ecmascript)
 ;
 // Evaluate the ES2024 feature check once at module load time.
@@ -19,13 +21,20 @@ function base64Decode(base64) {
     }
     return buffer;
 }
+"use turbopack no side effects";
+;
+const __TURBOPACK__default__export__ = base64Decode("YWxwaGEtYnl0ZXMK");
+// MERGED MODULE: [project]/src/fixtures/beta.bin.[bytes].mjs [client] (ecmascript)
+;
+"use turbopack no side effects";
+;
+const __TURBOPACK__default__export__1 = base64Decode("YmV0YS1ieXRlcwo");
+;
 ;
 const decoder = new TextDecoder();
-const alphaBytes = base64Decode("YWxwaGEtYnl0ZXM=");
-const betaBytes = base64Decode("YmV0YS1ieXRlcw==");
-const alpha = decoder.decode(alphaBytes);
-const beta = decoder.decode(betaBytes);
-const totalBytes = alphaBytes.length + betaBytes.length;
+const alpha = decoder.decode(__TURBOPACK__default__export__).trimEnd();
+const beta = decoder.decode(__TURBOPACK__default__export__1).trimEnd();
+const totalBytes = __TURBOPACK__default__export__.length + __TURBOPACK__default__export__1.length;
 console.log(`${alpha}|${beta}|${totalBytes}`);
 __turbopack_context__.s([], 63);
 }),

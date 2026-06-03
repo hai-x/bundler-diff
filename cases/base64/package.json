@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build:all": "pnpm run build:turbopack && pnpm run build:rspack",
-    "build:turbopack": "RUSTFLAGS=\"--cfg tokio_unstable -Cdebug-assertions=off\" cargo +nightly-2026-05-15 run --manifest-path ../../third_party/turbopack/Cargo.toml -p turbopack-cli -- build --dir . --root . --target node --no-minify --no-sourcemap src/entry.js",
+    "build:turbopack": "RUSTFLAGS=\"--cfg tokio_unstable -Cdebug-assertions=off\" cargo +nightly-2026-05-15 run --manifest-path ../../crates/turbopack-cli/Cargo.toml -- build --dir . --root . --target node --no-minify --no-sourcemap src/entry.js",
     "build:rspack": "rspack build --config rspack.config.cjs"
   },
   "devDependencies": {

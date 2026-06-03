@@ -1,29 +1,12 @@
 (() => {
 "use strict";
 var __webpack_modules__ = ({
-"./src/base64-shim.js"(__unused_rspack_module, __webpack_exports__, __webpack_require__) {
-__webpack_require__.r(__webpack_exports__);
-__webpack_require__.d(__webpack_exports__, {
-  base64Decode: () => (base64Decode)
-});
-const fromBase64 =
-  typeof Uint8Array.fromBase64 === "function" ? Uint8Array.fromBase64 : null;
+"./src/fixtures/alpha.bin"(module, __unused_rspack_exports, __webpack_require__) {
+module.exports = __webpack_require__.tb("YWxwaGEtYnl0ZXMK");
 
-function base64Decode(base64) {
-  if (fromBase64 !== null) {
-    return fromBase64(base64);
-  }
-
-  const binaryString = atob(base64);
-  const buffer = new Uint8Array(binaryString.length);
-
-  for (let i = 0; i < binaryString.length; i++) {
-    buffer[i] = binaryString.charCodeAt(i);
-  }
-
-  return buffer;
-}
-
+},
+"./src/fixtures/beta.bin"(module, __unused_rspack_exports, __webpack_require__) {
+module.exports = __webpack_require__.tb("YmV0YS1ieXRlcwo=");
 
 },
 
@@ -51,24 +34,6 @@ return module.exports;
 
 }
 
-// webpack/runtime/define_property_getters
-(() => {
-__webpack_require__.d = (exports, getters, values) => {
-	var define = (defs, kind) => {
-		for(var key in defs) {
-			if(__webpack_require__.o(defs, key) && !__webpack_require__.o(exports, key)) {
-				Object.defineProperty(exports, key, { enumerable: true, [kind]: defs[key] });
-			}
-		}
-	};
-	define(getters, "get");
-	define(values, "value");
-};
-})();
-// webpack/runtime/has_own_property
-(() => {
-__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-})();
 // webpack/runtime/make_namespace_object
 (() => {
 // define __esModule on exports
@@ -79,20 +44,31 @@ __webpack_require__.r = (exports) => {
 	Object.defineProperty(exports, '__esModule', { value: true });
 };
 })();
+// webpack/runtime/to_binary
+(() => {
+// define to binary helper
+__webpack_require__.tb = 
+  
+    (base64) => (new Uint8Array(Buffer.from(base64, 'base64')))
+  
+  
+  
+
+})();
 var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
 (() => {
 __webpack_require__.r(__webpack_exports__);
-/* import */ var _turbopack_base64__rspack_import_0 = __webpack_require__("./src/base64-shim.js");
+/* import */ var _fixtures_alpha_bin__rspack_import_0 = __webpack_require__("./src/fixtures/alpha.bin");
+/* import */ var _fixtures_beta_bin__rspack_import_1 = __webpack_require__("./src/fixtures/beta.bin");
+
 
 
 const decoder = new TextDecoder();
 
-const alphaBytes = (0,_turbopack_base64__rspack_import_0.base64Decode)("YWxwaGEtYnl0ZXM=");
-const betaBytes = (0,_turbopack_base64__rspack_import_0.base64Decode)("YmV0YS1ieXRlcw==");
-const alpha = decoder.decode(alphaBytes);
-const beta = decoder.decode(betaBytes);
-const totalBytes = alphaBytes.length + betaBytes.length;
+const alpha = decoder.decode(_fixtures_alpha_bin__rspack_import_0).trimEnd();
+const beta = decoder.decode(_fixtures_beta_bin__rspack_import_1).trimEnd();
+const totalBytes = _fixtures_alpha_bin__rspack_import_0.length + _fixtures_beta_bin__rspack_import_1.length;
 
 console.log(`${alpha}|${beta}|${totalBytes}`);
 

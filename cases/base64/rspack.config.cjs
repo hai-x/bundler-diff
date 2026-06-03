@@ -11,10 +11,13 @@ module.exports = {
     filename: "[name].js",
     clean: true,
   },
-  resolve: {
-    alias: {
-      "@turbopack/base64": path.resolve(__dirname, "src/base64-shim.js"),
-    },
+  module: {
+    rules: [
+      {
+        with: { type: "bytes" },
+        type: "asset/bytes",
+      },
+    ],
   },
   optimization: {
     minimize: false,

@@ -1,11 +1,10 @@
-import { base64Decode } from "@turbopack/base64";
+import alphaBytes from "./fixtures/alpha.bin" with { type: "bytes" };
+import betaBytes from "./fixtures/beta.bin" with { type: "bytes" };
 
 const decoder = new TextDecoder();
 
-const alphaBytes = base64Decode("YWxwaGEtYnl0ZXM=");
-const betaBytes = base64Decode("YmV0YS1ieXRlcw==");
-const alpha = decoder.decode(alphaBytes);
-const beta = decoder.decode(betaBytes);
+const alpha = decoder.decode(alphaBytes).trimEnd();
+const beta = decoder.decode(betaBytes).trimEnd();
 const totalBytes = alphaBytes.length + betaBytes.length;
 
 console.log(`${alpha}|${beta}|${totalBytes}`);

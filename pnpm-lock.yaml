@@ -6,6 +6,8 @@ settings:
 
 importers:
 
+  .: {}
+
   cases/base64:
     devDependencies:
       '@rspack/cli':

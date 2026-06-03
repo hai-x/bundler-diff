@@ -1,0 +1,7 @@
+{
+  "name": "runtime",
+  "private": true,
+  "scripts": {
+    "build:all": "pnpm --recursive --workspace-concurrency=1 run build:all"
+  }
+}
