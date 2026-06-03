@@ -1,0 +1,5 @@
+[submodule "third_party/turbopack"]
+	path = third_party/turbopack
+	url = https://github.com/vercel/next.js.git
+	branch = canary
+	shallow = true
