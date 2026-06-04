@@ -1,14 +1,15 @@
 use std::fmt;
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use turbo_rcstr::{RcStr, rcstr};
 use turbo_tasks::{ResolvedVc, Vc};
 use turbo_tasks_fs::FileSystemPath;
 use turbopack::{
     ModuleAssetContext,
     module_options::{
-        EcmascriptOptionsContext, JsxTransformOptions, ModuleOptionsContext,
-        TypescriptTransformOptions,
+        EcmascriptOptionsContext, JsxTransformOptions, LoaderRuleItem, ModuleOptionsContext,
+        TypescriptTransformOptions, WebpackLoaderBuiltinConditionSet,
+        WebpackLoaderBuiltinConditionSetMatch, WebpackLoadersOptions,
     },
 };
 use turbopack_browser::react_refresh::assert_can_resolve_react_refresh;
@@ -21,11 +22,18 @@ use turbopack_core::{
     environment::{BrowserEnvironment, Environment, ExecutionEnvironment},
     free_var_references,
     ident::Layer,
-    resolve::options::ImportMap,
+    resolve::{
+        ExternalTraced, ExternalType,
+        options::{ImportMap, ImportMapping},
+    },
 };
 use turbopack_ecmascript::TreeShakingMode;
 use turbopack_node::{
-    execution_context::ExecutionContext, transforms::postcss::PostCssTransformOptions,
+    execution_context::ExecutionContext,
+    transforms::{
+        postcss::PostCssTransformOptions,
+        webpack::{WebpackLoaderItem, WebpackLoaderItems},
+    },
 };
 use turbopack_resolve::resolve_options_context::ResolveOptionsContext;
 
@@ -44,8 +52,74 @@ impl fmt::Display for NodeEnv {
     }
 }
 
+#[turbo_tasks::value]
+struct CliWebpackLoaderBuiltinConditionSet;
+
+#[turbo_tasks::value_impl]
+impl CliWebpackLoaderBuiltinConditionSet {
+    #[turbo_tasks::function]
+    fn new() -> Vc<Box<dyn WebpackLoaderBuiltinConditionSet>> {
+        Vc::upcast::<Box<dyn WebpackLoaderBuiltinConditionSet>>(
+            CliWebpackLoaderBuiltinConditionSet.cell(),
+        )
+    }
+}
+
+#[turbo_tasks::value_impl]
+impl WebpackLoaderBuiltinConditionSet for CliWebpackLoaderBuiltinConditionSet {
+    fn match_condition(&self, _condition: &str) -> WebpackLoaderBuiltinConditionSetMatch {
+        WebpackLoaderBuiltinConditionSetMatch::Invalid
+    }
+}
+
 fn foreign_code_context_condition() -> ContextCondition {
     ContextCondition::InNodeModules
+}
+
+async fn get_webpack_loaders_options(
+    webpack_loader_rules: &[RcStr],
+) -> Result<Option<ResolvedVc<WebpackLoadersOptions>>> {
+    if webpack_loader_rules.is_empty() {
+        return Ok(None);
+    }
+
+    let mut rules = Vec::with_capacity(webpack_loader_rules.len());
+    for rule in webpack_loader_rules {
+        let Some((glob, loader)) = rule.split_once('=') else {
+            bail!("webpack loader rule must be formatted as `<glob>=<loader>`: {rule}");
+        };
+
+        rules.push((
+            RcStr::from(glob),
+            LoaderRuleItem {
+                loaders: ResolvedVc::<WebpackLoaderItems>::cell(vec![WebpackLoaderItem {
+                    loader: RcStr::from(loader),
+                    options: Default::default(),
+                }]),
+                rename_as: None,
+                condition: None,
+                module_type: None,
+            },
+        ));
+    }
+
+    Ok(Some(
+        WebpackLoadersOptions {
+            rules: ResolvedVc::cell(rules),
+            builtin_conditions: CliWebpackLoaderBuiltinConditionSet::new()
+                .to_resolved()
+                .await?,
+            loader_runner_package: Some(
+                ImportMapping::External(
+                    Some(rcstr!("loader-runner")),
+                    ExternalType::CommonJs,
+                    ExternalTraced::Untraced,
+                )
+                .resolved_cell(),
+            ),
+        }
+        .resolved_cell(),
+    ))
 }
 
 #[turbo_tasks::function]
@@ -95,6 +169,7 @@ async fn get_client_module_options_context(
     env: ResolvedVc<Environment>,
     node_env: Vc<NodeEnv>,
     source_maps_type: SourceMapsType,
+    webpack_loader_rules: Vec<RcStr>,
 ) -> Result<Vc<ModuleOptionsContext>> {
     let is_dev = matches!(*node_env.await?, NodeEnv::Development);
     let module_options_context = ModuleOptionsContext {
@@ -121,6 +196,8 @@ async fn get_client_module_options_context(
         .resolved_cell(),
     );
 
+    let enable_webpack_loaders = get_webpack_loaders_options(&webpack_loader_rules).await?;
+
     let module_options_context = ModuleOptionsContext {
         ecmascript: EcmascriptOptionsContext {
             enable_jsx,
@@ -132,6 +209,7 @@ async fn get_client_module_options_context(
             ..module_options_context.ecmascript.clone()
         },
         enable_postcss_transform: Some(PostCssTransformOptions::default().resolved_cell()),
+        enable_webpack_loaders,
         rules: vec![(
             foreign_code_context_condition(),
             module_options_context.clone().resolved_cell(),
@@ -150,6 +228,7 @@ pub fn get_client_asset_context(
     compile_time_info: Vc<CompileTimeInfo>,
     node_env: Vc<NodeEnv>,
     source_maps_type: SourceMapsType,
+    webpack_loader_rules: Vec<RcStr>,
 ) -> Vc<Box<dyn AssetContext>> {
     let resolve_options_context =
         get_client_resolve_options_context(project_path.clone(), node_env);
@@ -159,6 +238,7 @@ pub fn get_client_asset_context(
         compile_time_info.environment(),
         node_env,
         source_maps_type,
+        webpack_loader_rules,
     );
 
     let asset_context: Vc<Box<dyn AssetContext>> = Vc::upcast(ModuleAssetContext::new(

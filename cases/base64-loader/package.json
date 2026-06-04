@@ -1,0 +1,15 @@
+{
+  "name": "base64-loader-case",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:all": "pnpm run test:loader-hit",
+    "build:turbopack": "cargo run --manifest-path ../../crates/turbopack-cli/Cargo.toml -- build --dir . --root . --target node --no-minify --no-sourcemap --webpack-loader-rule '**/*.ts=./hit-loader.cjs' src/entry.js",
+    "start": "node dist/entry.entry.js",
+    "test:loader-hit": "node scripts/expect-loader-hit.cjs"
+  },
+  "devDependencies": {
+    "loader-runner": "^4.3.0"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

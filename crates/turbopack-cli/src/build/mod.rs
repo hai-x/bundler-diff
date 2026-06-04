@@ -25,8 +25,8 @@ use turbopack_cli_utils::issue::{ConsoleUi, LogOptions};
 use turbopack_core::{
     asset::Asset,
     chunk::{
-        ChunkingConfig, ChunkingContext, ChunkingContextExt, ContentHashing, EvaluatableAsset,
-        MangleType, MinifyType, SourceMapsType, availability_info::AvailabilityInfo,
+        ChunkingConfig, ChunkingContext, ChunkingContextExt, EvaluatableAsset, MangleType,
+        MinifyType, SourceMapsType, availability_info::AvailabilityInfo,
         chunk_id_strategy::ModuleIdStrategy,
     },
     environment::{BrowserEnvironment, Environment, ExecutionEnvironment, NodeJsEnvironment},
@@ -75,6 +75,7 @@ pub struct TurbopackBuildBuilder {
     minify_type: MinifyType,
     target: Target,
     scope_hoist: bool,
+    webpack_loader_rules: Vec<RcStr>,
 }
 
 impl TurbopackBuildBuilder {
@@ -96,6 +97,7 @@ impl TurbopackBuildBuilder {
             },
             target: Target::Node,
             scope_hoist: false,
+            webpack_loader_rules: vec![],
         }
     }
 
@@ -144,6 +146,11 @@ impl TurbopackBuildBuilder {
         self
     }
 
+    pub fn webpack_loader_rule(mut self, rule: RcStr) -> Self {
+        self.webpack_loader_rules.push(rule);
+        self
+    }
+
     pub async fn build(self) -> Result<()> {
         self.turbo_tasks
             .run_once(async move {
@@ -156,6 +163,7 @@ impl TurbopackBuildBuilder {
                     self.minify_type,
                     self.target,
                     self.scope_hoist,
+                    self.webpack_loader_rules.clone(),
                 ));
 
                 // Await the result to propagate any errors and capture effects.
@@ -196,6 +204,7 @@ async fn build_internal(
     minify_type: MinifyType,
     target: Target,
     scope_hoist: bool,
+    webpack_loader_rules: Vec<RcStr>,
 ) -> Result<()> {
     let output_fs = output_fs(project_dir.clone());
     const OUTPUT_DIR: &str = "dist";
@@ -260,6 +269,7 @@ async fn build_internal(
         compile_time_info,
         node_env,
         source_maps_type,
+        webpack_loader_rules,
     );
 
     let entry_requests = (*entry_requests
@@ -377,8 +387,6 @@ async fn build_internal(
                                 ..Default::default()
                             },
                         )
-                        .chunk_content_hashing(ContentHashing::Direct { length: 13 })
-                        .asset_content_hashing(ContentHashing::Direct { length: 13 })
                         .nested_async_availability(true)
                         .module_merging(scope_hoist);
                 }
@@ -599,6 +607,10 @@ pub async fn build(args: &BuildArguments) -> Result<()> {
         .scope_hoist(args.scope_hoist && !args.no_scope_hoist)
         .target(args.common.target.unwrap_or(Target::Node))
         .show_all(args.common.show_all);
+
+    for rule in &args.webpack_loader_rule {
+        builder = builder.webpack_loader_rule(RcStr::from(&**rule));
+    }
 
     for entry in normalize_entries(&args.common.entries) {
         builder = builder.entry_request(EntryRequest::Relative(entry));

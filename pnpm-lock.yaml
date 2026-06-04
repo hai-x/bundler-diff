@@ -17,6 +17,12 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6
 
+  cases/base64-loader:
+    devDependencies:
+      loader-runner:
+        specifier: ^4.3.0
+        version: 4.3.2
+
   cases/basic:
     devDependencies:
       '@rspack/cli':
@@ -25,6 +31,8 @@ importers:
       '@rspack/core':
         specifier: ^2.0.6
         version: 2.0.6
+
+  cases/target-compare: {}
 
 packages:
 
@@ -124,6 +132,10 @@ packages:
   '@tybys/wasm-util@0.10.2':
     resolution: {integrity: sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg==}
 
+  loader-runner@4.3.2:
+    resolution: {integrity: sha512-DFEqQ3ihfS9blba08cLfYf1NRAIEm+dDjic073DRDc3/JspI/8wYmtDsHwd3+4hwvdxSK7PGaElfTmm0awWJ4w==}
+    engines: {node: '>=6.11.5'}
+
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -211,6 +223,8 @@ snapshots:
     dependencies:
       tslib: 2.8.1
     optional: true
+
+  loader-runner@4.3.2: {}
 
   tslib@2.8.1:
     optional: true

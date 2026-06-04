@@ -129,6 +129,10 @@ pub struct BuildArguments {
     #[clap(long)]
     pub no_scope_hoist: bool,
 
+    /// Add a webpack loader rule as `<glob>=<loader>`.
+    #[clap(long = "webpack-loader-rule", value_parser)]
+    pub webpack_loader_rule: Vec<String>,
+
     /// Drop the `TurboTasks` object upon exit. By default we intentionally leak this memory, as
     /// we're about to exit the process anyways, but that can cause issues with valgrind or other
     /// leak detectors.
