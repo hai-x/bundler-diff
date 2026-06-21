@@ -2,6 +2,10 @@
 
 Cases are small fixtures for comparing behavior across bundlers.
 
+## Cache
+
+`cache/` contains cases for comparing cache behavior across bundlers.
+
 ## Runtime
 
 `runtime/` contains executable cases that build the same entry points with
