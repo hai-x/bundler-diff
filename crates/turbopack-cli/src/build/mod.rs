@@ -62,6 +62,8 @@ use crate::{
 
 type Backend = TurboTasksBackend<Either<TurboBackingStorage, NoopBackingStorage>>;
 
+const OUTPUT_DIR: &str = "dist/turbopack";
+
 pub struct TurbopackBuildBuilder {
     turbo_tasks: Arc<TurboTasks<Backend>>,
     project_dir: RcStr,
@@ -207,7 +209,6 @@ async fn build_internal(
     webpack_loader_rules: Vec<RcStr>,
 ) -> Result<()> {
     let output_fs = output_fs(project_dir.clone());
-    const OUTPUT_DIR: &str = "dist";
     let project_relative = project_dir.strip_prefix(&*root_dir).unwrap();
     let project_relative: RcStr = project_relative
         .strip_prefix(MAIN_SEPARATOR)
@@ -532,6 +533,20 @@ pub async fn build(args: &BuildArguments) -> Result<()> {
         project_dir,
         root_dir,
     } = normalize_dirs(&args.common.dir, &args.common.root)?;
+
+    if !args.no_clean {
+        let output_dir = PathBuf::from(&*project_dir).join(OUTPUT_DIR);
+        match std::fs::remove_dir_all(&output_dir) {
+            Ok(()) => {}
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+            Err(e) => {
+                return Err(e).context(format!(
+                    "Failed to clean output directory {}",
+                    output_dir.display()
+                ));
+            }
+        }
+    }
 
     let is_ci = std::env::var("CI").is_ok_and(|v| !v.is_empty());
     let is_short_session = true; // build sessions are always short

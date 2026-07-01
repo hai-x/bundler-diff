@@ -2,6 +2,18 @@
   "name": "runtime",
   "private": true,
   "scripts": {
-    "build:all": "pnpm --recursive --workspace-concurrency=1 run build:all"
+    "build:all": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:all",
+    "build:webpack": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:webpack",
+    "build:rspack": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:rspack",
+    "build:esbuild": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:esbuild",
+    "build:rolldown": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:rolldown"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^2.0.6",
+    "@rspack/core": "^2.0.6",
+    "esbuild": "^0.25.0",
+    "prettier": "^3.9.0",
+    "rolldown": "^1.0.0-beta.1",
+    "webpack-cli": "^7.1.0"
   }
 }

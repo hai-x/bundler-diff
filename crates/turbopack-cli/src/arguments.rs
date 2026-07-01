@@ -113,6 +113,10 @@ pub struct BuildArguments {
     #[clap(flatten)]
     pub common: CommonArguments,
 
+    /// Don't clean the output directory before building.
+    #[clap(long)]
+    pub no_clean: bool,
+
     /// Don't generate sourcemaps.
     #[clap(long)]
     pub no_sourcemap: bool,
