@@ -1,0 +1,13 @@
+{
+  "name": "decode-named-character-reference",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "deno": "./index.js",
+      "react-native": "./index.js",
+      "worker": "./index.js",
+      "browser": "./index.dom.js"
+    }
+  }
+}

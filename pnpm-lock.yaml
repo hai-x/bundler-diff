@@ -47,15 +47,15 @@ importers:
 
   cases/runtime/base64: {}
 
-  cases/runtime/base64-loader:
-    devDependencies:
-      loader-runner:
-        specifier: ^4.3.0
-        version: 4.3.2
-
   cases/runtime/basic: {}
 
   cases/runtime/esm_chunks: {}
+
+  cases/runtime/worker-exports-condition:
+    dependencies:
+      decode-named-character-reference:
+        specifier: file:./vendor/decode-named-character-reference
+        version: file:cases/runtime/worker-exports-condition/vendor/decode-named-character-reference
 
 packages:
 
@@ -571,6 +571,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  decode-named-character-reference@file:cases/runtime/worker-exports-condition/vendor/decode-named-character-reference:
+    resolution: {directory: cases/runtime/worker-exports-condition/vendor/decode-named-character-reference, type: directory}
 
   electron-to-chromium@1.5.383:
     resolution: {integrity: sha512-I2484/KkAvl8lm9VyjH2JnbOIV0d/UCqT7gbzs6l+o6Vmn9wgB66uVcKX+Vk6HrXtY6fbWTOEXuv8waDTuFNCw==}
@@ -1320,6 +1323,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  decode-named-character-reference@file:cases/runtime/worker-exports-condition/vendor/decode-named-character-reference: {}
 
   electron-to-chromium@1.5.383: {}
 
