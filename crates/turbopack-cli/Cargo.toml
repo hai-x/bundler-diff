@@ -23,8 +23,6 @@ workspace = true
 anyhow = { workspace = true }
 bincode = { workspace = true }
 clap = { workspace = true, features = ["derive", "env"] }
-dunce = { workspace = true }
-either = { workspace = true }
 rustc-hash = { workspace = true }
 swc_core = { workspace = true }
 tokio = { workspace = true, features = ["full"] }

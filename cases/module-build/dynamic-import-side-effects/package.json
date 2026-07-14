@@ -1,0 +1,15 @@
+{
+  "name": "dynamic-import-side-effects",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:all": "pnpm run build:turbopack && pnpm run build:rspack && pnpm run build:webpack && pnpm run build:esbuild && pnpm run build:rolldown && pnpm run build:rollup",
+    "build:webpack": "webpack --config webpack.config.cjs",
+    "build:turbopack": "cargo run --manifest-path ../../../crates/turbopack-cli/Cargo.toml -- build --dir . --root . --target node --no-minify --no-sourcemap index.js",
+    "build:rspack": "rspack build --config rspack.config.cjs",
+    "build:esbuild": "node esbuild.config.mjs",
+    "build:rolldown": "rolldown -c rolldown.config.mjs",
+    "build:rollup": "rollup -c ../../../configs/rollup.base.mjs"
+  }
+}

@@ -6,14 +6,22 @@
     "build:webpack": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:webpack",
     "build:rspack": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:rspack",
     "build:esbuild": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:esbuild",
-    "build:rolldown": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:rolldown"
+    "build:rolldown": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:rolldown",
+    "build:rollup": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run build:rollup",
+    "minify": "pnpm --workspace-concurrency=1 --filter \"${CASE:-*}\" run minify"
   },
   "devDependencies": {
-    "@rspack/cli": "^2.0.6",
-    "@rspack/core": "^2.0.6",
-    "esbuild": "^0.25.0",
-    "prettier": "^3.9.0",
-    "rolldown": "^1.0.0-beta.1",
-    "webpack-cli": "^7.1.0"
+    "@rollup/plugin-commonjs": "latest",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rspack/cli": "latest",
+    "@rspack/core": "latest",
+    "esbuild": "latest",
+    "prettier": "latest",
+    "rolldown": "latest",
+    "rollup": "latest",
+    "terser": "^5.51.2",
+    "webpack": "link:../../Fork/webpack",
+    "webpack-cli": "latest"
   }
 }

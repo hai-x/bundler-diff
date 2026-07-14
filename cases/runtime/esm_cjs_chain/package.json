@@ -1,0 +1,15 @@
+{
+  "name": "esm-cjs-chain-case",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:all": "pnpm run build:turbopack && pnpm run build:rspack && pnpm run build:webpack && pnpm run build:esbuild && pnpm run build:rolldown && pnpm run build:rollup",
+    "build:turbopack": "cargo run --manifest-path ../../../crates/turbopack-cli/Cargo.toml -- build --dir . --root . --target node --no-minify --no-sourcemap src/entry.js",
+    "build:rspack": "rspack build --config ../../../configs/rspack.base.cjs",
+    "build:webpack": "WEBPACK_PACKAGE=$PWD/../../../node_modules/webpack/lib/index.js webpack --config ../../../configs/webpack.base.cjs",
+    "build:esbuild": "node ../../../configs/esbuild.base.mjs",
+    "build:rolldown": "rolldown -c ../../../configs/rolldown.base.mjs",
+    "build:rollup": "rollup -c ../../../configs/rollup.base.mjs",
+    "minify": "node ../../../configs/terser.mjs"
+  }
+}

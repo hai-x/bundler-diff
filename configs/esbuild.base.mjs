@@ -1,3 +1,4 @@
+import { pathToFileURL } from "node:url";
 import * as esbuild from "esbuild";
 
 // Shared esbuild defaults for runtime cases.
@@ -19,4 +20,8 @@ export function buildEsbuild(overrides = {}) {
   return esbuild.build(createEsbuildConfig(overrides));
 }
 
-await buildEsbuild();
+// run the default build only as the entry point, so a case config can import
+// the helpers without triggering it
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await buildEsbuild();
+}

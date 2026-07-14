@@ -27,7 +27,6 @@ use turbopack_core::{
         options::{ImportMap, ImportMapping},
     },
 };
-use turbopack_ecmascript::TreeShakingMode;
 use turbopack_node::{
     execution_context::ExecutionContext,
     transforms::{
@@ -78,6 +77,7 @@ fn foreign_code_context_condition() -> ContextCondition {
 
 async fn get_webpack_loaders_options(
     webpack_loader_rules: &[RcStr],
+    is_dev: bool,
 ) -> Result<Option<ResolvedVc<WebpackLoadersOptions>>> {
     if webpack_loader_rules.is_empty() {
         return Ok(None);
@@ -117,6 +117,13 @@ async fn get_webpack_loaders_options(
                 )
                 .resolved_cell(),
             ),
+            // Modules are always compiled for the client (browser) environment.
+            target: ResolvedVc::cell(rcstr!("web")),
+            mode: if is_dev {
+                rcstr!("development")
+            } else {
+                rcstr!("production")
+            },
         }
         .resolved_cell(),
     ))
@@ -175,7 +182,8 @@ async fn get_client_module_options_context(
     let module_options_context = ModuleOptionsContext {
         environment: Some(env),
         execution_context: Some(execution_context),
-        tree_shaking_mode: Some(TreeShakingMode::ReexportsOnly),
+        follow_reexports: true,
+        module_fragments_enabled: false,
         keep_last_successful_parse: is_dev,
         ..Default::default()
     };
@@ -196,7 +204,7 @@ async fn get_client_module_options_context(
         .resolved_cell(),
     );
 
-    let enable_webpack_loaders = get_webpack_loaders_options(&webpack_loader_rules).await?;
+    let enable_webpack_loaders = get_webpack_loaders_options(&webpack_loader_rules, is_dev).await?;
 
     let module_options_context = ModuleOptionsContext {
         ecmascript: EcmascriptOptionsContext {
